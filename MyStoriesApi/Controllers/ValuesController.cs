@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyStoriesApi.Controllers
 {
@@ -16,29 +17,23 @@ namespace MyStoriesApi.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [Authorize]
+        [Route("getlogin")]
+        public IActionResult GetLogin()
         {
-            return "value";
+            return Ok($"Ваш логин: {User.Identity.Name}");
+        }
+        [Route("getType")]
+        public IActionResult Test(object item)
+        {
+            return Ok(item.GetType().ToString());
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [Authorize]
+        [Route("getrole")]
+        public IActionResult GetRole()
         {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok("Ваша роль: администратор");
         }
     }
 }
