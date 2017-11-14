@@ -19,6 +19,7 @@ namespace MyStoriesApi.Controllers
 
         [Authorize]
         [Route("getlogin")]
+        [HttpGet]
         public IActionResult GetLogin()
         {
             return Ok($"Ваш логин: {User.Identity.Name}");
@@ -26,6 +27,7 @@ namespace MyStoriesApi.Controllers
         [Route("getType")]
         public IActionResult Test(object item)
         {
+            var headers = Request.Headers;
             return Ok(item.GetType().ToString());
         }
 

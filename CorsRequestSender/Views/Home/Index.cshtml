@@ -42,7 +42,13 @@
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:50478/api/values/gettype',
-                data: item
+                data: item,
+                beforeSend: function (xhr) {
+
+                    var token = sessionStorage.getItem(tokenKey);
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    xhr.withCredentials = true;
+                }
             }).success(function (data) {
                 $('.userName').text(data);
                 console.log(data);
@@ -60,10 +66,10 @@
 
                         $.ajax({
                                 type: 'POST',
-                                url: 'http://localhost:50478/sign',
+                                url: 'http://localhost:50478/token',
                                 data: loginData
                         }).success(function (data) {
-                                $('.userName').text(data.username);
+                                $('.userName').text(data.login);
                                 $('.userInfo').css('display', 'block');
                                 $('.loginForm').css('display', 'none');
                                 // сохраняем в хранилище sessionStorage токен доступа
@@ -73,44 +79,50 @@
                                 console.log(data);
                         });
         });
-        $('#submitSignUp').click(function (e) {
-            e.preventDefault();
-            var loginData = {
-                username: $('#emailSignUp').val(),
-                password: $('#passwordSignUp').val()
-            };
-            var request = new XMLHttpRequest();
-            function reqReadyStateChange() {
-                if (request.readyState == 4 && request.status == 200)
-                    $('.userName').text(data.username);
-                $('.userInfo').css('display', 'block');
-                $('.loginForm').css('display', 'none');
-                // сохраняем в хранилище sessionStorage токен доступа
-                sessionStorage.setItem(tokenKey, data.access_token);
-                console.log(data.access_token);
-            }
-
+                $('#submitSignUp').click(function (e) {
+                    e.preventDefault();
+                    var loginData = {
+                        username: $('#emailSignUp').val(),
+                        password: $('#passwordSignUp').val()
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:50478/signUp',
+                        data: loginData
+                    }).success(function (data) {
+                        $('.userName').text(data.username);
+                        $('.userInfo').css('display', 'block');
+                        $('.loginForm').css('display', 'none');
+                        // сохраняем в хранилище sessionStorage токен доступа
+                        sessionStorage.setItem(tokenKey, data.access_token);
+                        console.log(data.access_token);
+                    }).fail(function (data) {
+                        console.log(data);
+                    });
+                });
+            /*
+            var request = new XMLHttpRequest();            
             var body = "username=" + loginData.username + "&password=" + loginData.password;
             request.open("POST", "http://localhost:50478/signUp");
+            request.withCredentials = true;
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             request.onreadystatechange = reqReadyStateChange;
+            request.setRequestHeader("Authorization", "Bearer " + token);
             request.send(body);
 
-           /* $.ajax({
-                type: 'POST',
-                url: 'http://localhost:50478/signUp',
-                data: loginData
-            }).success(function (data) {
-                $('.userName').text(data.username);
+            function reqReadyStateChange(data) {
+                
+                if (request.readyState == 4 && request.status == 200) {
+                    var response = JSON.parse(request.response);
+                    $('.userName').text(response.username);
                 $('.userInfo').css('display', 'block');
                 $('.loginForm').css('display', 'none');
                 // сохраняем в хранилище sessionStorage токен доступа
-                sessionStorage.setItem(tokenKey, data.access_token);
-                console.log(data.access_token);
-            }).fail(function (data) {
-                console.log(data);
-            });*/
-        });
+                sessionStorage.setItem(tokenKey, response.access_token);
+                console.log(response.access_token);
+                }
+            }
+        });*/
 
                 $('#logOut').click(function (e) {
                         e.preventDefault();
@@ -119,42 +131,41 @@
                         sessionStorage.removeItem(tokenKey);
                 });
 
-                $('#getDataByLogin').click(function (e) {
-                        e.preventDefault();
-                        $.ajax({
-                                type: 'GET',
-                                url: '/api/values/getlogin',
-                                beforeSend: function (xhr) {
-
-                                        var token = sessionStorage.getItem(tokenKey);
-                                        xhr.setRequestHeader("Authorization", "Bearer " + token);
-                                },
-                                success: function (data) {
-                                        alert(data);
-                                },
-                                fail: function (data) {
-                                        console.log(data);
-                                }
-                        });
-                });
-                /*$('#getDataByRole').click(function (e) {
-                        e.preventDefault();
-                        $.ajax({
-                                type: 'GET',
-                                url: '/api/values/getrole',
-                                beforeSend: function (xhr) {
-
-                                        var token = sessionStorage.getItem(tokenKey);
-                                        xhr.setRequestHeader("Authorization", "Bearer " + token);
-                                },
-                                success: function (data) {
-                                        alert(data);
-                                },
-                                fail: function (data) {
-                                        console.log(data);
-                                }
-                        });
-                });*/
+                $('#getDataByLogin').click(function (e) {
+                    e.preventDefault();
+                    /* var request = new XMLHttpRequest();
+                     request.open("GET", "http://localhost:50478/api/values/getlogin");
+                     request.withCredentials = true;
+                     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                     request.onreadystatechange = reqReadyStateChange;
+                     var token = sessionStorage.getItem(tokenKey);
+                     request.setRequestHeader("Authorization", "Bearer " + token);
+                     request.send();
+                     function reqReadyStateChange(data) {
+ 
+                         if (request.readyState == 4 && request.status == 200) {
+                             var response = JSON.parse(request.response);
+                             $('.userName').text(response);
+ 
+                             sessionStorage.setItem(tokenKey, response.access_token);
+                             console.log(response.access_token);
+                         }
+                     }
+                 });*/
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:50478/api/values/getlogin',
+                        beforeSend: function (xhr) {
+                            var token = sessionStorage.getItem(tokenKey);
+                            xhr.setRequestHeader("Authorization", "Bearer " + token);
+                        }
+                    }).success(function (data) {
+                        alert(data);
+                    }).fail(function (data) {
+                        console.log(data);
+                    });
+                }); 
+                
     </script>
 </body>
 </html>

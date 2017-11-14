@@ -29,7 +29,7 @@ namespace MyStoriesApi
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
-                        //options.RequireHttpsMetadata = false;
+                        options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             // укзывает, будет ли валидироваться издатель при валидации токена
@@ -63,7 +63,14 @@ namespace MyStoriesApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCorsMiddleware(); 
+            app.UseCors(builder => builder.WithOrigins("http://localhost:54236")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+            //app.UseJwtBearerAuthentication();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

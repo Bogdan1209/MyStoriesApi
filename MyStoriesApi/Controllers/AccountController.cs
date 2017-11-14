@@ -53,12 +53,6 @@ namespace MyStoriesApi.Controllers
             await Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
 
-        [HttpPost("/sign")]
-        public IActionResult Som(LoginViewModel userData)
-        {
-            return Ok(userData.Username);
-        }
-
         [HttpPost("/signUp")]
         public async Task SignUp(LoginViewModel userData)
         {
